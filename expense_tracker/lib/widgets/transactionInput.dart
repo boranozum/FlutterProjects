@@ -1,11 +1,35 @@
 import 'package:flutter/material.dart';
 
-class TransactionInput extends StatelessWidget {
+class TransactionInput extends StatefulWidget {
   final Function addTx;
+  TransactionInput({required this.addTx});
+
+  @override
+  State<TransactionInput> createState() => _TransactionInputState();
+}
+
+class _TransactionInputState extends State<TransactionInput> {
   final titleController = TextEditingController();
+
   final amountController = TextEditingController();
 
-  TransactionInput({required this.addTx});
+  void submitData() {
+    final enteredTitle = titleController.text;
+    final enteredAmount = double.parse(amountController.text);
+
+    if (enteredTitle.isEmpty || enteredAmount <= 0) {
+      return;
+    }
+
+    // widget is a reserved keyword in flutter that refers to the widget class
+
+    widget.addTx(
+      enteredTitle,
+      enteredAmount,
+    );
+
+    Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,17 +41,17 @@ class TransactionInput extends StatelessWidget {
           TextField(
             decoration: InputDecoration(labelText: 'Title'),
             controller: titleController,
+            onSubmitted: (_) => submitData(),
           ),
           TextField(
             decoration: InputDecoration(labelText: 'Amount'),
             controller: amountController,
+            keyboardType: TextInputType.number,
+            onSubmitted: (_) => submitData(),
           ),
           ElevatedButton(
             onPressed: () {
-              addTx(
-                titleController.text,
-                double.parse(amountController.text),
-              );
+              submitData();
             },
             child: Text('Add Transaction'),
             style: ButtonStyle(
